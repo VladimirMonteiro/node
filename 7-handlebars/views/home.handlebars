@@ -2,6 +2,11 @@
     <h1>Handlebars</h1> 
     <p>nome do usuario: {{user.name}}</p>
     <p>sobronome do usuario: {{user.surname}}</p> 
+    {{#if approved}}
+        <p>parabens, o seu cadastro foi aprovado</p>
+    {{else}}
+        <p>O seu cadastro precisa de aprovaçao para acesso total do sistema.</p>
+    {{/if}}
 
     {{#if auth}}
         <p>Voce esta autenticado <a href="/dashboard">clique aki</a> para ir para o dashboard</p>
