@@ -54,9 +54,12 @@ app.get('/book/:id', (req,res) => {
 app.get('/books/edit/:id', (req, res)=> {
     const id = req.params.id
 
-    const sql = `SELECT * FROM books WHERE id = ${id}`
+    const sql = `SELECT * FROM books WHERE ?? = ?`
+    const data = ['id', id]
 
-    conn.query(sql, function(err, data){
+
+
+    conn.query(sql,data, function(err, data){
         if(err){
             console.log(err)
             return
@@ -73,9 +76,10 @@ app.get('/books/edit/:id', (req, res)=> {
 app.post('/book/updatebook', (req, res)=> {
     const {id, title, pages} = req.body
 
-    const sql = `UPDATE books SET titulo = '${title}', paginas = '${pages}' WHERE id = ${id}`
+    const sql = `UPDATE books SET ?? = ?, ?? = ? WHERE ?? = ?`
+    const data = ['titulos', title, 'paginas', pages, 'id', id]
 
-    conn.query(sql, function(err){
+    conn.query(sql,data,  function(err){
         if(err){
             console.log(err)
             return
@@ -88,10 +92,28 @@ app.post('/book/updatebook', (req, res)=> {
 app.post('/books/insertbook', (req, res)=> {
     const {title, pages} = req.body
 
-    const sql = `INSERT INTO books (titulo, paginas) VALUES ('${title}', '${pages}') `
+    const sql = `INSERT INTO books (??, ??) VALUES (?, ?) `
+    const data = ['titulo', 'paginas', title, pages]
 
-    conn.query(sql, function(err){
+    conn.query(sql,data ,function(err){
         
+        if(err){
+            console.log(err)
+        }
+
+        res.redirect('/books')
+    })
+})
+
+app.post('/books/remove/:id', (req,res)=> {
+
+    const id = req.params.id
+
+    const sql = `DELETE FROM books WHERE ?? = ?`
+    const data = ['id', id]
+
+
+    conn.query(sql,id, function(err){
         if(err){
             console.log(err)
         }
@@ -102,9 +124,12 @@ app.post('/books/insertbook', (req, res)=> {
 
 
 
+
 app.get('/', (req, res)=> {
     res.render('home')
 })
+
+
 
 
 
@@ -112,7 +137,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'nodeMysql'
+    database: 'nodemysql'
 })
 
 conn.connect(function(err){

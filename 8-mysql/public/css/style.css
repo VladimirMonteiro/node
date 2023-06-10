@@ -77,5 +77,11 @@ form{
 
 }
 .action{
-    margin-top: 8px;
+    margin-top: 1em;
+   
+}
+
+.action a {
+    margin-right: 1em;
+  
 }
