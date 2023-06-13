@@ -8,7 +8,7 @@ const conn = require('./db/conn')
 
 //MODELS
 const User = require('./models/User')
-const { where } = require('sequelize')
+const Address = require('./models/Address')
 
 
 
