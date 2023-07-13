@@ -22,3 +22,28 @@
     <input type="submit" value="Editar">
 
 </form>
+<div class="address-container">
+    <h2>Endereços:</h2>
+    <form action="/address/create" method="post">
+    <input type="hidden" name="UserId" value="{{user.id}}">
+    <div class="form-control">
+        <label for="Street">Rua:</label>
+        <input type="text" name="Street" id="Street" placeholder="cidade...">   
+    </div>
+    <div class="form-control">
+        <label for="number">Número:</label>
+        <input type="text" name="number" id="number" placeholder="número...">
+
+    </div>
+    <div class="form-control">
+        <label for="city">Cidade:</label>
+        <input type="text" name="city" id="city" placeholder="cidade...">
+
+    </div>
+
+    <input type="submit" value="Incluir endereço">
+    
+
+
+    </form>
+</div>

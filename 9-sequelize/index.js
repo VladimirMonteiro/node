@@ -9,6 +9,7 @@ const conn = require('./db/conn')
 //MODELS
 const User = require('./models/User')
 const Address = require('./models/Address')
+const { where } = require('sequelize')
 
 
 
@@ -116,6 +117,25 @@ app.post('/users/edit', async(req, res) => {
 
 
 
+
+})
+
+app.post('/address/create' , async (req, res) => {
+    const userId = req.body.UserId
+    const street = req.body.Street
+    const number = req.body.number
+    const city = req.body.city
+
+    const address = {
+        userId,
+        street,
+        number,
+        city
+    }
+
+    await Address.create(address)
+
+    res.redirect(`/users/edit/${userIdserId}`)
 
 })
 
