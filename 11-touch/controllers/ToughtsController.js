@@ -1,9 +1,38 @@
-const Toughts = require('../models/Tought')
+
+const Tought = require('../models/Tought')
+const User = require('../models/User')
+
+const {Op, where} = require('sequelize')
+
 
 module.exports = class ToughtsController{
 
     static async showToughts(req,res){
-        res.render('toughts/home')
+
+
+        let search = ''
+
+        if(req.query.search){
+            search = req.query.search
+        }
+      
+        const toughtsData = await Tought.findAll({include: User, where: {title: {[Op.like]: `%${search}%`}}} )
+
+        const toughts = toughtsData.map((results)=> results.get({plain: true}))
+
+        console.log(toughts)
+
+        let toughtsQty = toughts.length
+
+        if(toughtsQty === 0){
+            toughtsQty = false
+        }
+
+
+        
+      
+      
+        res.render('toughts/home', {toughts, search, toughtsQty})
         
     }
 
@@ -11,8 +40,29 @@ module.exports = class ToughtsController{
 
         const userId = req.session.userid
 
-        const toughts = await Toughts.findAll({where:{UserId: userId}})
-        res.render('toughts/dashboard', {toughts})
+        const user = await User.findOne({where: {id: userId, }, include: Tought, plain: true} )
+
+        if(!user){
+            res.redirect('/login')
+        }
+
+       
+        
+        const toughts = user.Toughts.map((results)=> results.dataValues)
+
+
+
+        let emptyToughts = false
+  
+
+        if(toughts.length === 0){
+            emptyToughts = true
+       
+        }
+
+        console.log(emptyToughts)
+
+        res.render('toughts/dashboard', { toughts,emptyToughts})
     }
 
     static async createToughtPost(req, res){
@@ -26,7 +76,7 @@ module.exports = class ToughtsController{
 
         try {
 
-            await Toughts.create(tought)
+            await Tought.create(tought)
             req.flash('message', 'Pensamento criado com sucesso!')
 
             req.session.save(()=>{
@@ -46,9 +96,56 @@ module.exports = class ToughtsController{
 
     }
 
+    static async editTought(req, res){
+
+        const id = req.params.id
+
+        const tought = await Tought.findOne({raw: true, where: {id: id}})
+
+        res.render('toughts/edit', {tought})
+    }
+
+
+    static async editToughtPost(req, res){
+
+        const id = req.body.id
+
+        const tought = {
+            title: req.body.title
+        }
+
+        await Tought.update(tought, {where: {id: id}})
+        
+        req.flash('message', 'Pensamento atualizado com sucesso!')
+        
+        req.session.save(()=> {
+            res.redirect('/toughts/dashboard')
+        })
+    }
+
     static  createTought(req,res){
         res.render('toughts/create')
 
+    }
+
+    static async removeTought(req, res){
+        const id = req.body.id
+        const userId = req.session.userid
+
+       try {
+
+        await Tought.destroy({where: {id: id, UserId: userId}})
+        req.flash('message', 'Pensamento Excluido com sucesso!')
+
+        req.session.save(()=>{
+            res.redirect('/toughts/dashboard')
+        })
+        
+       } catch (error) {
+
+        console.log(error)
+
+       }
     }
 
 }
